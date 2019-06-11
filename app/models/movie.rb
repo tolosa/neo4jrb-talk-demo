@@ -10,4 +10,6 @@ class Movie
 
   validates :title, :released, presence: true
   validates :released, numericality: { only_integer: true }
+
+  has_many :in, :actors, type: :ACTED_IN, model_class: :Person
 end
