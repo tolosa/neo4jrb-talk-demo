@@ -9,4 +9,6 @@ class Person
 
   validates :name, :born, presence: true
   validates :born, numericality: { only_integer: true }
+
+  has_many :out, :acted_in, type: :ACTED_IN, model_class: :Movie
 end
