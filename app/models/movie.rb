@@ -12,4 +12,5 @@ class Movie
   validates :released, numericality: { only_integer: true }
 
   has_many :in, :actors, type: :ACTED_IN, model_class: :Person
+  has_many :in, :reviews, rel_class: :Reviewed
 end
