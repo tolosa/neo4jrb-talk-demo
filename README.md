@@ -1,24 +1,51 @@
-# README
+# Demo script
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Annotations with the code shown and explained during the Neo4j demo.
 
-Things you may want to cover:
+```ruby
+# Find Keanu Reeves
+keanu = Person.find_by name: 'Keanu Reeves'
 
-* Ruby version
+# Movies with Keanu
+keanu.acted_in
 
-* System dependencies
+# Just the titles of the movies
+# (explain pluck)
+keanu.acted_in.pluck :title
 
-* Configuration
+# All actors who worked with Keanu
+# (explain chained asociations)
+# (explain that the final objetive is to get a query that lists actors who worked with Keanu in more than one movie)
+keanu.acted_in.actors.pluck :name
 
-* Database creation
+# All actors without repeating
+# (explain Cypher variables)
+keanu.acted_in.actors(:a).pluck 'distinct(a.name)'
 
-* Database initialization
+# Exclude Keanu himself from the list
+# (explain where)
+keanu.as(:k).acted_in.actors(:a).where('a <> k').pluck 'distinct(a.name)'
 
-* How to run the test suite
+# All actors, with a count of movies shared with Keanu
+keanu.as(:k).acted_in(:m).actors(:a).where('a <> k').pluck 'distinct(a.name), count(m)'
 
-* Services (job queues, cache servers, search engines, etc.)
+# Including the list of movies for each actor
+# (explain collect, show that it can also return nodes)
+keanu.as(:k).acted_in(:m).actors(:a).where('a <> k').pluck 'a.name, count(m), collect(m.title)'
 
-* Deployment instructions
+# List only actors who worked with Keanu in more than one movie
+# (explain with)
+# (explain query_as)
+# (explain query object DSL)
+keanu.as(:k).acted_in(:m).actors.query_as(:a).where('a <> k').with('count(m) as count, a.name as name, collect(m.title) as titles').where('count > 1').pluck :count, :name, :titles
 
-* ...
+# Reviews of keanu's movies
+# (explain why this returns users)
+keanu.acted_in.reviews
+# (explain each_rel)
+keanu.acted_in.reviews.each_rel
+keanu.acted_in(:m).reviews(:reviewer, :review).pluck 'm.title, reviewer.name, review.summary'
+
+# All reviews from all movies, with rating
+Movie.all(:m).reviews(:reviewer, :review).pluck 'm.title, reviewer.name, review.summary, review.rating'
+```
