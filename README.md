@@ -48,4 +48,9 @@ keanu.acted_in(:m).reviews(:reviewer, :review).pluck 'm.title, reviewer.name, re
 
 # All reviews from all movies, with rating
 Movie.all(:m).reviews(:reviewer, :review).pluck 'm.title, reviewer.name, review.summary, review.rating'
+
+# All users related to Paul
+# (explain recursive associations)
+user = Person.find_by name: 'Paul Blythe'
+user.friends(rel_length: :any).pluck :name
 ```
